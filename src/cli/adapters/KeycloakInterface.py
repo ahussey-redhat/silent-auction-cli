@@ -70,7 +70,10 @@ class KeycloakInterface:
 
     def refresh_token(self, token):
         # Refresh token
-        return self.keycloak_openid.refresh_token(token['refresh_token'])
+        with open(f"{HOME_DIR}/.config/.silent-auction.txt", "w") as fp:
+            token = self.keycloak_openid.refresh_token(token['refresh_token'])
+            fp.write(json.dumps(token))
+        return token
 
     def logout(self):
         # Logout
