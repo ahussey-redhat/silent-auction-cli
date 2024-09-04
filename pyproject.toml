@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "silent-auction-cli"
+dynamic = ["version"]
+authors = [
+  { name="Alex Hussey", email="ahussey@redhat.com" },
+]
+description = "A command line interface to the Silent Auction application"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "typer",
+    "typer_shell",
+    "python-keycloak",
+    "requests",
+    "pygments",
+    "schedule"
+]
+
+[project.urls]
+Homepage = "https://github.com/ahussey-redhat/silent-auction-cli"
+Issues = "https://github.com/ahussey-redhat/silent-auction-cli/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools_scm]
+version_file = "_version.py"
+
+[project.scripts]
+silent-auction-cli = "cli.__main__:main"
