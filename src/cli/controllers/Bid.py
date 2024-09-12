@@ -39,8 +39,28 @@ class Bid:
             print("Not authorized. Please login.")
         if r.status_code == 404:
             print("No auctions available.")
-    def list_bids_for_auction(self, auction_id):
+    def get_bids_for_auction(self, auction_id):
         endpoint = f"api/v1/auctions/{auction_id}/bids"
+        headers = {'Authorization': f'Bearer {app_variables.TOKEN["access_token"]}'}
+        r = requests.get(f"{self.backend_url}{endpoint}", headers=headers)
+        if r.status_code == 200:
+            return r.json()
+        if r.status_code == 401:
+            print("Not authorized. Please login.")
+        if r.status_code == 404:
+            print("No auctions available.")
+    def get_highest_bid_for_auction(self, auction_id):
+        endpoint = f"api/v1/auctions/{auction_id}/bids/highest"
+        headers = {'Authorization': f'Bearer {app_variables.TOKEN["access_token"]}'}
+        r = requests.get(f"{self.backend_url}{endpoint}", headers=headers)
+        if r.status_code == 200:
+            return r.json()
+        if r.status_code == 401:
+            print("Not authorized. Please login.")
+        if r.status_code == 404:
+            print("No auctions available.")
+    def get_highest_bids_for_all_auctions(self):
+        endpoint = f"api/v1/auctions/bids/highest"
         headers = {'Authorization': f'Bearer {app_variables.TOKEN["access_token"]}'}
         r = requests.get(f"{self.backend_url}{endpoint}", headers=headers)
         if r.status_code == 200:

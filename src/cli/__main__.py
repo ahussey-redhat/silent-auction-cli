@@ -110,7 +110,29 @@ def delete_auction(auction_id: int):
 
 @app.command()
 def list_bids_for_auction(auction_id: int):
-    raw_json_response = json.dumps(BID.list_bids_for_auction(auction_id), indent=2)
+    raw_json_response = json.dumps(BID.get_bids_for_auction(auction_id), indent=2)
+    print(
+        highlight(
+            raw_json_response,
+            lexer=JsonLexer(),
+            formatter=Terminal256Formatter()
+        )
+    )
+
+@app.command()
+def list_highest_bid_for_auction(auction_id: int):
+    raw_json_response = json.dumps(BID.get_highest_bid_for_auction(auction_id), indent=2)
+    print(
+        highlight(
+            raw_json_response,
+            lexer=JsonLexer(),
+            formatter=Terminal256Formatter()
+        )
+    )
+
+@app.command()
+def list_highest_bids_for_all_auctions():
+    raw_json_response = json.dumps(BID.get_highest_bids_for_all_auctions(), indent=2)
     print(
         highlight(
             raw_json_response,
