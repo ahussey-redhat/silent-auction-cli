@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
+import logging
 from datetime import datetime
-from multiprocessing.spawn import freeze_support
-from os import access
+
+import typer
 
 #
 # This application is the command line interface to the Silent Auction application
 #
 
-import cli.repositories.Auction
-import cli.repositories.Bid as Bid
-import cli.repositories.User as User
+import cli.controllers.Auction
+import cli.controllers.Bid
 
 import cli.adapters.KeycloakInterface
 import cli.adapters.SchedulerInterface as SchedulerInterface
@@ -17,11 +17,9 @@ import cli.adapters.SchedulerInterface as SchedulerInterface
 import cli.configuration.variables as app_variables
 
 from typer_shell import make_typer_shell
-from typer import prompt
 
 import base64
 import json
-import logging
 
 from pygments import highlight
 from pygments.formatters.terminal256 import Terminal256Formatter
@@ -31,12 +29,15 @@ from pygments.lexers.data import JsonLexer
 # Global variables
 #
 # - Auction Class
-AUCTION = cli.repositories.Auction.Auction()
+AUCTION = cli.controllers.Auction.Auction()
+# - Bid Class
+BID = cli.controllers.Bid.Bid()
 # - Authentication Scheduler
 SCHEDULER = SchedulerInterface.SchedulerInterface()
 
 
 def shell_prompt():
+    app_variables.KC.get_token()
     access_token = app_variables.TOKEN['access_token']
     access_token_payload =  json.loads(base64.urlsafe_b64decode((access_token.split('.')[1]) + '=' * (4 - len((access_token.split('.')[1])) % 4)))
     return f"silent-auction-cli ({access_token_payload['preferred_username']}): "
@@ -49,6 +50,15 @@ app = make_typer_shell(
 @app.command()
 def show_token():
     print(f"Token: {app_variables.TOKEN}")
+
+@app.command()
+def login():
+    app_variables.KC.get_token()
+    logging.debug(app_variables.TOKEN)
+
+@app.command()
+def logout():
+    app_variables.KC.logout(app_variables.TOKEN)
 
 @app.command()
 def list_auctions():
@@ -87,6 +97,34 @@ def delete_auction(auction_id: int):
     raw_json_response = json.dumps(
         AUCTION.delete_auction(
             auction_id=auction_id
+        ),
+        indent=2
+    )
+    print(
+        highlight(
+            raw_json_response,
+            lexer=JsonLexer(),
+            formatter=Terminal256Formatter()
+        )
+    )
+
+@app.command()
+def list_bids_for_auction(auction_id: int):
+    raw_json_response = json.dumps(BID.list_bids_for_auction(auction_id), indent=2)
+    print(
+        highlight(
+            raw_json_response,
+            lexer=JsonLexer(),
+            formatter=Terminal256Formatter()
+        )
+    )
+
+@app.command()
+def place_bid(auction_id: int, amount: int):
+    raw_json_response = json.dumps(
+        BID.create_bid(
+            auction_id=auction_id,
+            bid_amount=amount
         ),
         indent=2
     )

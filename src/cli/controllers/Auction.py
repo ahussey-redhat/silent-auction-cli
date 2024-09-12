@@ -16,12 +16,11 @@ class Auction:
     # - Delete Auction: Deletes an existing auction
     #
     def __init__(self):
-        self.token = app_variables.TOKEN
         self.backend_url = app_variables.BACKEND_BASE_URL
 
     def create_auction(self, item_name: str, description: str, auction_start: datetime, auction_end: datetime, starting_bid: int, image_path: str):
         endpoint = "api/v1/auctions"
-        headers = {'Authorization': f'Bearer {self.token["access_token"]}'}
+        headers = {'Authorization': f'Bearer {app_variables.TOKEN["access_token"]}'}
         data = {
             "item_name": item_name,
             "description": description,
@@ -46,7 +45,7 @@ class Auction:
 
     def delete_auction(self, auction_id: int):
         endpoint = "api/v1/auctions/" + str(auction_id)
-        headers = {'Authorization': f'Bearer {self.token["access_token"]}'}
+        headers = {'Authorization': f'Bearer {app_variables.TOKEN["access_token"]}'}
         r = requests.delete(f"{self.backend_url}{endpoint}", headers=headers)
         if r.status_code == 200 or r.status_code == 201:
             return r.json()
@@ -57,7 +56,7 @@ class Auction:
 
     def list_auctions(self):
         endpoint = "api/v1/auctions"
-        headers = {'Authorization': f'Bearer {self.token["access_token"]}'}
+        headers = {'Authorization': f'Bearer {app_variables.TOKEN["access_token"]}'}
         r = requests.get(f"{self.backend_url}{endpoint}", headers=headers)
         if r.status_code == 200:
             return r.json()
